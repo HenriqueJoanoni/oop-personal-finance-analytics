@@ -3,6 +3,7 @@ package org.oop.finance.DAO;
 import org.oop.finance.DTO.Expense;
 import org.oop.finance.Exception.DAOException;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -17,4 +18,11 @@ public interface ExpenseInterface {
      * @throws DAOException the dao exception
      */
     public List<Expense> getAllExpenses() throws DAOException;
+
+    /**
+     * Add new expense.
+     *
+     * @throws DAOException the dao exception
+     */
+    public void addNewExpense(String expenseTitle, String expenseCategory, double expenseAmount, Date dateIncurred) throws DAOException;
 }

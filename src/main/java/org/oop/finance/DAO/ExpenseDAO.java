@@ -3,12 +3,8 @@ package org.oop.finance.DAO;
 import org.oop.finance.DTO.Expense;
 import org.oop.finance.Exception.DAOException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,51 +13,72 @@ import java.util.List;
 public class ExpenseDAO extends DAO implements ExpenseInterface {
 
     /**
+     * Get all expenses
      *
      * @return List<Expense>
      * @throws DAOException Exception
      */
     @Override
     public List<Expense> getAllExpenses() throws DAOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         List<Expense> expenseList = new ArrayList<>();
+        String query = "SELECT * FROM expense";
 
-        try {
-            conn = this.startConnection();
+        try (Connection conn = this.startConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
 
-            String query = "SELECT * FROM expense";
-            stmt = conn.prepareStatement(query);
-
-            rs = stmt.executeQuery();
             while (rs.next()) {
-                int expenseId = rs.getInt("expense_id");
-                String expenseTitle = rs.getNString("expense_title");
-                String expenseCategory = rs.getNString("expense_category");
-                double expenseAmount = rs.getDouble("expense_amount");
-                Date dateIncurred = rs.getDate("date_incurred");
-
-                Expense expense = new Expense(expenseId, expenseTitle, expenseCategory, expenseAmount, dateIncurred);
+                Expense expense = new Expense(
+                        rs.getInt("expense_id"),
+                        rs.getString("expense_title"),
+                        rs.getString("expense_category"),
+                        rs.getDouble("expense_amount"),
+                        rs.getDate("date_incurred")
+                );
                 expenseList.add(expense);
             }
         } catch (SQLException ex) {
-            throw new DAOException("getAllExpenses() " + ex.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    stopConnection(conn);
-                }
-            } catch (SQLException ex) {
-                throw new DAOException("getAllExpenses() " + ex.getMessage());
-            }
+            throw new DAOException("ERROR: could not fetch expenses: " + ex.getMessage());
         }
+
         return expenseList;
+    }
+
+    /**
+     * Add a new expense
+     *
+     * @param expenseTitle    String
+     * @param expenseCategory String
+     * @param expenseAmount   double
+     * @param dateIncurred    Date (java.sql)
+     * @throws DAOException Exception
+     */
+    @Override
+    public void addNewExpense(
+            String expenseTitle,
+            String expenseCategory,
+            double expenseAmount,
+            Date dateIncurred
+    ) throws DAOException {
+
+        String query = "INSERT INTO expense (expense_title, expense_category,expense_amount, date_incurred) VALUES (?,?,?,?)";
+
+        try (Connection conn = this.startConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, expenseTitle);
+            stmt.setString(2, expenseCategory);
+            stmt.setDouble(3, expenseAmount);
+            stmt.setDate(4, dateIncurred);
+
+            int rowsInserted = stmt.executeUpdate();
+
+            if (rowsInserted == 0) {
+                throw new DAOException("ERROR: no rows inserted: ");
+            }
+
+        } catch (SQLException ex) {
+            throw new DAOException("ERROR: could not insert a new expense: " + ex.getMessage());
+        }
     }
 }

@@ -1,6 +1,6 @@
 package org.oop.finance.DTO;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * The type Income.

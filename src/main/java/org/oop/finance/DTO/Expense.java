@@ -1,6 +1,7 @@
 package org.oop.finance.DTO;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.List;
 
 /**
  * The type Expense.
@@ -124,16 +125,23 @@ public class Expense {
         this.expenseDate = expenseDate;
     }
 
+    /**
+     * Calculate total spend double.
+     *
+     * @param expenseList the expense list
+     * @return the double
+     */
+    public double calculateTotalSpend(List<Expense> expenseList) {
+        double totalValue = 0;
+        for (Expense expense : expenseList) {
+            totalValue += expense.getExpenseAmount();
+        }
+        return totalValue;
+    }
+
     @Override
     public String toString() {
-        return String.format(
-                "Expense Details:\n" +
-                        "- ID: %d\n" +
-                        "- Title: %s\n" +
-                        "- Category: %s\n" +
-                        "- Amount: $%.2f\n" +
-                        "- Date: %s\n",
-                expenseId, expenseTitle, expenseCategory, expenseAmount, expenseDate
-        );
+        return String.format("ID: %d | Title: %s | Category: %s | Amount: %.2f | Date: %s",
+                expenseId, expenseTitle, expenseCategory, expenseAmount, expenseDate);
     }
 }
