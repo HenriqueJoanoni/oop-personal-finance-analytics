@@ -6,8 +6,6 @@ import org.oop.finance.DTO.Expense;
 import org.oop.finance.Exception.DAOException;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,6 +15,7 @@ public class ShowMenu {
         Scanner sc = new Scanner(System.in);
         ExpenseInterface IExpenses = new ExpenseDAO();
         Expense exp = new Expense();
+        DateUtil dateIncurred = new DateUtil();
         List<Expense> expenses;
         int userChoice;
 
@@ -70,6 +69,7 @@ public class ShowMenu {
                 System.out.println("TOTAL VALUE: " + totalValue);
                 break;
             case 2:
+                // TODO: BUG ON THIS FEATURE CHECK LATER
                 System.out.println("\nAdd new Expense -> ");
 
                 System.out.println("\nGive your expense a title: ");
@@ -81,22 +81,22 @@ public class ShowMenu {
 
                 System.out.println("\nWhat's the amount? ");
                 double expenseAmount = sc.nextDouble();
-                sc.nextLine();
 
                 System.out.println("\nWhich date this expense was made? (DD/MM/YYY)");
+                sc.nextLine();
                 String userDateInput = sc.nextLine();
 
-                /** TERRIBLE APPROACH, CHECK A BETTER WAY LATER */
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                dateFormat.setLenient(false);
-                Date utilDate = dateFormat.parse(userDateInput);
-                java.sql.Date dateIncurred = new java.sql.Date(utilDate.getTime());
-
-                IExpenses.addNewExpense(expenseTitle, expenseCategory, expenseAmount, dateIncurred);
+                IExpenses.addNewExpense(expenseTitle, expenseCategory, expenseAmount, dateIncurred.formatDate(userDateInput));
 
                 System.out.println("\nDisplaying all expenses: " + IExpenses.getAllExpenses());
                 break;
             case 3:
+                System.out.println("\nDelete expense -> ");
+
+                System.out.println("\nType the id of an expense you want do delete: ");
+                int deleteExpense = sc.nextInt();
+
+                IExpenses.deleteExpenseById(deleteExpense);
                 break;
             case 4:
                 break;

@@ -81,4 +81,24 @@ public class ExpenseDAO extends DAO implements ExpenseInterface {
             throw new DAOException("ERROR: could not insert a new expense: " + ex.getMessage());
         }
     }
+
+    /**
+     * Delete an expense by id
+     *
+     * @param expenseId expense id
+     * @throws DAOException Exception
+     */
+    @Override
+    public void deleteExpenseById(int expenseId) throws DAOException {
+        String query = "DELETE FROM expense WHERE expense_id = ?";
+
+        try (Connection conn = this.startConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, expenseId);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException("ERROR: could not delete this expense: " + ex.getMessage());
+        }
+    }
 }

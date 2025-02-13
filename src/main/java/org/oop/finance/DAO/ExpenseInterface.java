@@ -25,4 +25,13 @@ public interface ExpenseInterface {
      * @throws DAOException the dao exception
      */
     public void addNewExpense(String expenseTitle, String expenseCategory, double expenseAmount, Date dateIncurred) throws DAOException;
+
+
+    /**
+     * Delete expense by id.
+     *
+     * @param expenseId the expense id
+     * @throws DAOException the dao exception
+     */
+    public void deleteExpenseById(int expenseId) throws DAOException;
 }
