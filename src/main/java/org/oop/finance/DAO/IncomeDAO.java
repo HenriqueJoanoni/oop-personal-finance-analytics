@@ -100,4 +100,39 @@ public class IncomeDAO extends DAO implements IncomeInterface {
             throw new DAOException("ERROR: could not delete this income: " + ex.getMessage());
         }
     }
+
+    /**
+     * Get all incomes in a determined month
+     *
+     * @param month month
+     * @param year year
+     * @return List<Income>
+     * @throws DAOException Exception
+     */
+    public List<Income> getIncomesByMonth(int month, int year) throws DAOException {
+        List<Income> incomeList = new ArrayList<>();
+        String query = "SELECT * FROM income WHERE MONTH(date_earned) = ? AND YEAR(date_earned) = ?";
+
+        try (Connection conn = this.startConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Income income = new Income(
+                        rs.getInt("income_id"),
+                        rs.getString("income_title"),
+                        rs.getDouble("income_amount"),
+                        rs.getDate("date_earned")
+                );
+                incomeList.add(income);
+            }
+
+        } catch (SQLException ex) {
+            throw new DAOException("ERROR: could not fetch incomes: " + ex.getMessage());
+        }
+        return incomeList;
+    }
 }

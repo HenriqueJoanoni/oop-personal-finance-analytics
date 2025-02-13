@@ -101,4 +101,39 @@ public class ExpenseDAO extends DAO implements ExpenseInterface {
             throw new DAOException("ERROR: could not delete this expense: " + ex.getMessage());
         }
     }
+
+    /**
+     * Get all expenses by month
+     *
+     * @param month month
+     * @param year year
+     * @return List<Expense>
+     * @throws DAOException Exception
+     */
+    public List<Expense> getExpensesByMonth(int month, int year) throws DAOException {
+        List<Expense> expenseList = new ArrayList<>();
+        String query = "SELECT * FROM expense WHERE MONTH(date_incurred) = ? AND YEAR(date_incurred) = ?";
+
+        try (Connection conn = this.startConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Expense expense = new Expense(
+                        rs.getInt("expense_id"),
+                        rs.getString("expense_title"),
+                        rs.getString("expense_category"),
+                        rs.getDouble("expense_amount"),
+                        rs.getDate("date_incurred")
+                );
+                expenseList.add(expense);
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("ERROR: could not fetch expenses: " + ex.getMessage());
+        }
+        return expenseList;
+    }
 }

@@ -121,7 +121,7 @@ public class Income {
 
     @Override
     public String toString() {
-        return String.format("ID: %d | Title: %s | amount: %.2f | Date: %s",
+        return String.format("| %-5d | %-25s | €%-10.2f | %-10s |",
                 incomeId, incomeTitle, incomeAmount, dateEarned);
     }
 }

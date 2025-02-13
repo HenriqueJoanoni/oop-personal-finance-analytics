@@ -141,7 +141,7 @@ public class Expense {
 
     @Override
     public String toString() {
-        return String.format("ID: %d | Title: %s | Category: %s | Amount: %.2f | Date: %s",
+        return String.format("| %-5d | %-20s | %-15s | €%-10.2f | %-10s |",
                 expenseId, expenseTitle, expenseCategory, expenseAmount, expenseDate);
     }
 }

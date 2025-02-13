@@ -28,28 +28,10 @@ public class ShowMenu {
         List<Income> incomes;
 
         /** UTILS */
-        DateUtil dateFormat = new DateUtil();
+        Utils dateFormat = new Utils();
+        Utils displayExpTable = new Utils();
+        Utils displayIncTable = new Utils();
         int userChoice;
-
-        System.out.println("""
-                
-                
-                d8888b. d88888b d8888b. .d8888.  .d88b.  d8b   db  .d8b.  db     \s
-                88  `8D 88'     88  `8D 88'  YP .8P  Y8. 888o  88 d8' `8b 88     \s
-                88oodD' 88ooooo 88oobY' `8bo.   88    88 88V8o 88 88ooo88 88     \s
-                88~~~   88~~~~~ 88`8b     `Y8b. 88    88 88 V8o88 88~~~88 88     \s
-                88      88.     88 `88. db   8D `8b  d8' 88  V888 88   88 88booo.\s
-                88      Y88888P 88   YD `8888Y'  `Y88P'  VP   V8P YP   YP Y88888P\s
-                                                                                 \s
-                                                                                 \s
-                d88888b d888888b d8b   db  .d8b.  d8b   db  .o88b. d88888b .d8888.
-                88'       `88'   888o  88 d8' `8b 888o  88 d8P  Y8 88'     88'  YP
-                88ooo      88    88V8o 88 88ooo88 88V8o 88 8P      88ooooo `8bo. \s
-                88~~~      88    88 V8o88 88~~~88 88 V8o88 8b      88~~~~~   `Y8b.
-                88        .88.   88  V888 88   88 88  V888 Y8b  d8 88.     db   8D
-                YP      Y888888P VP   V8P YP   YP VP   V8P  `Y88P' Y88888P `8888Y'
-                
-                """);
 
         System.out.println("""
                 Please choose one of the options below: \n
@@ -77,31 +59,33 @@ public class ShowMenu {
                 double totalValue = exp.calculateTotalSpend(expenses);
 
                 System.out.println("List of expenses: ");
-                expenses.forEach(System.out::println);
+                displayExpTable.printExpenseTable(expenses);
 
-                System.out.println("TOTAL VALUE: " + totalValue);
+
+                System.out.println("TOTAL VALUE: € " + totalValue);
+                displayMenu();
                 break;
             case 2:
-                // TODO: BUG ON THIS FEATURE CHECK LATER
                 System.out.println("\nAdd new Expense -> ");
+                sc.nextLine();
 
                 System.out.println("\nGive your expense a title: ");
                 String expenseTitle = sc.nextLine();
-                sc.nextLine();
 
                 System.out.println("\nAdd a category for this expense: ");
                 String expenseCategory = sc.nextLine();
 
                 System.out.println("\nWhat's the amount? ");
                 double expenseAmount = sc.nextDouble();
-
-                System.out.println("\nWhich date this expense was made? (DD/MM/YYY)");
                 sc.nextLine();
+
+                System.out.println("\nWhich date was this expense made? (DD/MM/YYYY)");
                 String userDateInput = sc.nextLine();
 
                 IExpenses.addNewExpense(expenseTitle, expenseCategory, expenseAmount, dateFormat.formatDate(userDateInput));
 
-                System.out.println("\nDisplaying all expenses: " + IExpenses.getAllExpenses());
+                displayExpTable.printExpenseTable(IExpenses.getAllExpenses());
+                displayMenu();
                 break;
             case 3:
                 System.out.println("\nDelete expense -> ");
@@ -110,6 +94,8 @@ public class ShowMenu {
                 int deleteExpense = sc.nextInt();
 
                 IExpenses.deleteExpenseById(deleteExpense);
+                displayExpTable.printExpenseTable(IExpenses.getAllExpenses());
+                displayMenu();
                 break;
             case 4:
                 System.out.println("\nList all incomes: ");
@@ -123,28 +109,29 @@ public class ShowMenu {
                 double totalIncomeValue = inc.calculateTotalEarned(incomes);
 
                 System.out.println("List of Incomes: ");
-                incomes.forEach(System.out::println);
+                displayIncTable.printIncomeTable(incomes);
 
-                System.out.println("TOTAL INCOME EARNED: " + totalIncomeValue);
+                System.out.println("TOTAL INCOME EARNED: € " + totalIncomeValue);
+                displayMenu();
                 break;
             case 5:
-                // TODO: BUG ON THIS FEATURE CHECK LATER
                 System.out.println("\nAdd new income ->");
+                sc.nextLine();
 
                 System.out.println("\nGive your income a title: ");
                 String incomeTitle = sc.nextLine();
-                sc.nextLine();
 
                 System.out.println("\nWhat's the amount? ");
                 double incomeAmount = sc.nextDouble();
+                sc.nextLine();
 
                 System.out.println("\nWhich date this income was earned? (DD/MM/YYY)");
-                sc.nextLine();
                 String incomeDateEarned = sc.nextLine();
 
                 IIncome.addNewIncome(incomeTitle, incomeAmount, dateFormat.formatDate(incomeDateEarned));
 
-                System.out.println("\nDisplaying all expenses: " + IIncome.getAllIncomes());
+                displayIncTable.printIncomeTable(IIncome.getAllIncomes());
+                displayMenu();
                 break;
             case 6:
                 System.out.println("\nDelete Income -> ");
@@ -153,8 +140,19 @@ public class ShowMenu {
                 int deleteIncome = sc.nextInt();
 
                 IIncome.deleteIncomeById(deleteIncome);
+                displayIncTable.printIncomeTable(IIncome.getAllIncomes());
+                displayMenu();
                 break;
             case 7:
+                System.out.println("\nShow all incomes and expenses by month ->");
+                System.out.println("\nEnter a month (1-12): ");
+                int month = sc.nextInt();
+
+                System.out.println("\nEnter a year: ");
+                int year = sc.nextInt();
+
+                FinanceService financeService = new FinanceService(new IncomeDAO(), new ExpenseDAO());
+                financeService.showMonthlyReport(month, year);
                 break;
             default:
                 System.out.println("Invalid Option, please try again");
