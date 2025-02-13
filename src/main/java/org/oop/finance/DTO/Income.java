@@ -1,6 +1,7 @@
 package org.oop.finance.DTO;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * The type Income.
@@ -104,15 +105,23 @@ public class Income {
         this.dateEarned = dateEarned;
     }
 
+    /**
+     * Calculate total earned double.
+     *
+     * @param incomeList the income list
+     * @return the double
+     */
+    public double calculateTotalEarned(List<Income> incomeList) {
+        double totalValue = 0;
+        for (Income income : incomeList) {
+            totalValue += income.getIncomeAmount();
+        }
+        return totalValue;
+    }
+
     @Override
     public String toString() {
-        return String.format(
-                "Income Details:\n" +
-                        "- ID: %d\n" +
-                        "- Title: %s\n" +
-                        "- Amount: $%.2f\n" +
-                        "- Date Earned: %s\n",
-                incomeId, incomeTitle, incomeAmount, dateEarned
-        );
+        return String.format("ID: %d | Title: %s | amount: %.2f | Date: %s",
+                incomeId, incomeTitle, incomeAmount, dateEarned);
     }
 }

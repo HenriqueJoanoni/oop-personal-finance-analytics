@@ -74,7 +74,7 @@ public class ExpenseDAO extends DAO implements ExpenseInterface {
             int rowsInserted = stmt.executeUpdate();
 
             if (rowsInserted == 0) {
-                throw new DAOException("ERROR: no rows inserted: ");
+                throw new DAOException("ERROR: no rows inserted :( ");
             }
 
         } catch (SQLException ex) {

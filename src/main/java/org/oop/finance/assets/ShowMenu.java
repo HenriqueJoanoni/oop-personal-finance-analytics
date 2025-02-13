@@ -2,7 +2,10 @@ package org.oop.finance.assets;
 
 import org.oop.finance.DAO.ExpenseDAO;
 import org.oop.finance.DAO.ExpenseInterface;
+import org.oop.finance.DAO.IncomeDAO;
+import org.oop.finance.DAO.IncomeInterface;
 import org.oop.finance.DTO.Expense;
+import org.oop.finance.DTO.Income;
 import org.oop.finance.Exception.DAOException;
 
 import java.text.ParseException;
@@ -13,10 +16,19 @@ public class ShowMenu {
 
     public void displayMenu() throws DAOException, ParseException {
         Scanner sc = new Scanner(System.in);
+
+        /** EXPENSES */
         ExpenseInterface IExpenses = new ExpenseDAO();
         Expense exp = new Expense();
-        DateUtil dateIncurred = new DateUtil();
         List<Expense> expenses;
+
+        /** INCOMES */
+        IncomeInterface IIncome = new IncomeDAO();
+        Income inc = new Income();
+        List<Income> incomes;
+
+        /** UTILS */
+        DateUtil dateFormat = new DateUtil();
         int userChoice;
 
         System.out.println("""
@@ -45,15 +57,16 @@ public class ShowMenu {
                 2. Add a New Expense
                 3. Delete an Expense by ID
                 4. List All Income Earned
-                5. Delete an Income by ID
-                6. List all Income and Expenses by Date
+                5. Add A New Income
+                6. Delete an Income by ID
+                7. List all Income and Expenses by Date
                 """);
 
         userChoice = sc.nextInt();
 
         switch (userChoice) {
             case 1:
-                System.out.println("\nFind all Expenses: ");
+                System.out.println("\nFind all Expenses -> ");
                 expenses = IExpenses.getAllExpenses();
 
                 if (expenses.isEmpty()) {
@@ -86,7 +99,7 @@ public class ShowMenu {
                 sc.nextLine();
                 String userDateInput = sc.nextLine();
 
-                IExpenses.addNewExpense(expenseTitle, expenseCategory, expenseAmount, dateIncurred.formatDate(userDateInput));
+                IExpenses.addNewExpense(expenseTitle, expenseCategory, expenseAmount, dateFormat.formatDate(userDateInput));
 
                 System.out.println("\nDisplaying all expenses: " + IExpenses.getAllExpenses());
                 break;
@@ -99,10 +112,47 @@ public class ShowMenu {
                 IExpenses.deleteExpenseById(deleteExpense);
                 break;
             case 4:
+                System.out.println("\nList all incomes: ");
+                incomes = IIncome.getAllIncomes();
+
+                if (incomes.isEmpty()) {
+                    System.out.println("No incomes found :(");
+                    return;
+                }
+
+                double totalIncomeValue = inc.calculateTotalEarned(incomes);
+
+                System.out.println("List of Incomes: ");
+                incomes.forEach(System.out::println);
+
+                System.out.println("TOTAL INCOME EARNED: " + totalIncomeValue);
                 break;
             case 5:
+                // TODO: BUG ON THIS FEATURE CHECK LATER
+                System.out.println("\nAdd new income ->");
+
+                System.out.println("\nGive your income a title: ");
+                String incomeTitle = sc.nextLine();
+                sc.nextLine();
+
+                System.out.println("\nWhat's the amount? ");
+                double incomeAmount = sc.nextDouble();
+
+                System.out.println("\nWhich date this income was earned? (DD/MM/YYY)");
+                sc.nextLine();
+                String incomeDateEarned = sc.nextLine();
+
+                IIncome.addNewIncome(incomeTitle, incomeAmount, dateFormat.formatDate(incomeDateEarned));
+
+                System.out.println("\nDisplaying all expenses: " + IIncome.getAllIncomes());
                 break;
             case 6:
+                System.out.println("\nDelete Income -> ");
+
+                System.out.println("\nType the id of the income you want do delete: ");
+                int deleteIncome = sc.nextInt();
+
+                IIncome.deleteIncomeById(deleteIncome);
                 break;
             case 7:
                 break;
